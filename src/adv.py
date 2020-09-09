@@ -1,4 +1,5 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
@@ -38,7 +39,7 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
-
+my_player = Player('Caesar', room['outside'])
 # Write a loop that:
 #
 # * Prints the current room name
@@ -49,3 +50,66 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+q = False
+directions = {
+    'n': 'North',
+    'e': 'East',
+    's': 'South',
+    'w': 'West'
+}
+while q != True: 
+    print(f'{my_player.name} is in {my_player.current_room}')
+    print(f'{my_player.current_room.description}')
+
+    inp = input("Enter 'n', 'e', 's' or 'w' to move North, East, South or West otherwise enter 'q' to quit the game: ")
+    
+    if inp == 'q':
+        q = True
+
+    elif my_player.current_room.name == room['outside'].name:
+        if inp == 'n':
+            my_player.current_room = room['outside'].n_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        else:    
+            print("Try North!")
+
+    elif my_player.current_room.name == room['foyer'].name:
+        if inp == 'n':
+            my_player.current_room = room['foyer'].n_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        elif inp == 's':
+            my_player.current_room = room['foyer'].s_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        elif inp == 'e':
+            my_player.current_room = room['foyer'].e_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        else:
+            print("Try East or South!")
+
+    elif my_player.current_room.name == room['overlook'].name:
+        if inp == 's':
+            my_player.current_room = room['overlook'].s_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        else:
+            print("Nowhere to go except South!")
+    
+    elif my_player.current_room.name == room['narrow'].name:
+        if inp == 'n':
+            my_player.current_room = room['narrow'].n_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        elif inp == 'w':
+            my_player.current_room = room['narrow'].w_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        else:
+            print("Try North or West!")
+    elif my_player.current_room.name == room['treasure'].name:
+        if inp == 's':
+            my_player.current_room = room['treasure'].s_to
+            print(f"{my_player.name} is moving {directions[inp]}")
+        else:
+            print("Go South!")
+    else:
+        print("Try 'n' for North, 'e' for East, 's' for South or 'w' for West")
+        
+    
