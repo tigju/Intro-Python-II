@@ -1,16 +1,18 @@
 from room import Room
 from player import Player
 from item import Item
+from weapon import Weapon
+from treasure import Treasure
 
 # Declare Items
 item_dict = {
     'coins': Item("Coins", "Pile of coins - old gold"),
-    'sword': Item("Sword", "Very sharp made out of steel"),
+    'sword': Weapon("Sword", "Very sharp made out of steel", 20),
     'skull': Item("Skull", "As dry as a bone"),
     'apple': Item("Apple", "Eat this fresh apple to increase life points"),
     'hammer': Item("Hammer", "You can crush stones with it"),
-    "diamond": Item("Diamond", "Very shiny"),
-    "emerald": Item("Emerald", "The emerald has been known as a symbol of truth and love")
+    "diamond": Treasure("Diamond", "Very shiny"),
+    "emerald": Treasure("Emerald", "The emerald has been known as a symbol of truth and love")
 }
 
 # Declare all the rooms
@@ -62,87 +64,126 @@ my_player = Player('Caesar', room['outside'], [])
 #
 # If the user enters "q", quit the game.
 
-q = False
+## these directions for complex if-else statements used to print directions
+# directions = {
+#     'n': 'North',
+#     'e': 'East',
+#     's': 'South',
+#     'w': 'West'
+# }
+
+# generalized way for player locations
 directions = {
-    'n': 'North',
-    'e': 'East',
-    's': 'South',
-    'w': 'West'
+    'n': lambda location: location.n_to,
+    's': lambda location: location.s_to,
+    'e': lambda location: location.e_to,
+    'w': lambda location: location.w_to,
 }
-while q != True: 
+
+while True: 
+
     print(f'\n{my_player.name} is in {my_player.current_room}')
     print('-------------------------------------------------------------')
     print(f"{my_player.show_inventory()}")
     inp = input("Enter 'n', 'e', 's' or 'w' to move North, East, South or West otherwise enter 'q' to quit the game: ")
     
-    if inp == 'q':
-        q = True
+    if inp.lower() == 'q':
+        print("Good game! Bye")
+        exit()
 
-    if len(inp.split(" ")) > 1:
-        if inp.split(" ")[0] == 'get':
-            for i in my_player.current_room.items:
-                if i.name[0].lower() == inp.split(" ")[1].lower():
-                    print(f"\nYou just picked {i.name[0]}")
-                    my_player.get_item(i)
-                    my_player.current_room.remove_item(i)
+############################################################################
+################## TOO COMPLEX IF ELSE STATEMENTS ##########################
+############################################################################
 
-        if inp.split(" ")[0] == 'drop':
-            for i in my_player.inventory:
-                if i.name[0].lower() == inp.split(" ")[1].lower():
-                    print(f"\nYou just picked {i.name[0]}")
-                    my_player.current_room.add_item(i)
-                    my_player.drop_item(i)
+    # if len(inp.split(" ")) > 1:
+    #     if inp.split(" ")[0] == 'get':
+    #         for i in my_player.current_room.items:
+    #             if i.name[0].lower() == inp.split(" ")[1].lower():
+    #                 print(f"\nYou just picked {i.name[0]}")
+    #                 my_player.get_item(i)
+    #                 my_player.current_room.remove_item(i)
+
+    #     if inp.split(" ")[0] == 'drop':
+    #         for i in my_player.inventory:
+    #             if i.name[0].lower() == inp.split(" ")[1].lower():
+    #                 print(f"\nYou just picked {i.name[0]}")
+    #                 my_player.current_room.add_item(i)
+    #                 my_player.drop_item(i)
+
+    # elif my_player.current_room.name == room['outside'].name:
+    #     if inp == 'n':
+    #         my_player.current_room = room['outside'].n_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     else:    
+    #         print("Try North!\n")
+
+    # elif my_player.current_room.name == room['foyer'].name:
+    #     if inp == 'n':
+    #         my_player.current_room = room['foyer'].n_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     elif inp == 's':
+    #         my_player.current_room = room['foyer'].s_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     elif inp == 'e':
+    #         my_player.current_room = room['foyer'].e_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     elif inp == 'w':
+    #         print("Try East or South!\n")
+    #     else:
+    #         print("Error! Could not undersand you! Try again")
+
+    # elif my_player.current_room.name == room['overlook'].name:
+    #     if inp == 's':
+    #         my_player.current_room = room['overlook'].s_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     else:
+    #         print("Nowhere to go except South!\n")
+    
+    # elif my_player.current_room.name == room['narrow'].name:
+    #     if inp == 'n':
+    #         my_player.current_room = room['narrow'].n_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     elif inp == 'w':
+    #         my_player.current_room = room['narrow'].w_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     else:
+    #         print("Try North or West!\n")
+    # elif my_player.current_room.name == room['treasure'].name:
+    #     if inp == 's':
+    #         my_player.current_room = room['treasure'].s_to
+    #         print(f"{my_player.name} is moving {directions[inp]}...\n")
+    #     else:
+    #         print("Go South!")
+    # else:
+    #     print("Try 'n' for North, 'e' for East, 's' for South or 'w' for West\n")
+
+###########################################################################
+################## INSTEAD USE GENERALIZED IF ELSE ########################
+###########################################################################
 
     # elif len(inp.split(" ")) == 1 and inp.split(" ")[0] == 'get':
     #     next_inp = input(f"what do you want to pick? you can choose: \n{my_player.current_room.show_items()}")
     #     if i.name[0].lower() == inp_next.split(" ")[0].lower():
 
-
-    elif my_player.current_room.name == room['outside'].name:
-        if inp == 'n':
-            my_player.current_room = room['outside'].n_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        else:    
-            print("Try North!\n")
-
-    elif my_player.current_room.name == room['foyer'].name:
-        if inp == 'n':
-            my_player.current_room = room['foyer'].n_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        elif inp == 's':
-            my_player.current_room = room['foyer'].s_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        elif inp == 'e':
-            my_player.current_room = room['foyer'].e_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        elif inp == 'w':
-            print("Try East or South!\n")
+    if inp in directions.keys():
+        if directions[inp](my_player.current_room) != None:
+            my_player.current_room = directions[inp](my_player.current_room)
         else:
-            print("Error! Could not undersand you! Try again")
-
-    elif my_player.current_room.name == room['overlook'].name:
-        if inp == 's':
-            my_player.current_room = room['overlook'].s_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        else:
-            print("Nowhere to go except South!\n")
-    
-    elif my_player.current_room.name == room['narrow'].name:
-        if inp == 'n':
-            my_player.current_room = room['narrow'].n_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        elif inp == 'w':
-            my_player.current_room = room['narrow'].w_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        else:
-            print("Try North or West!\n")
-    elif my_player.current_room.name == room['treasure'].name:
-        if inp == 's':
-            my_player.current_room = room['treasure'].s_to
-            print(f"{my_player.name} is moving {directions[inp]}...\n")
-        else:
-            print("Go South!")
+            print("Try different direction!")
     else:
-        print("Try 'n' for North, 'e' for East, 's' for South or 'w' for West\n")
-        
-    
+        if len(inp.split(" ")) > 1:
+            if inp.split(" ")[0] == 'get':
+                for i in my_player.current_room.items:
+                    if i.name[0].lower() == inp.split(" ")[1].lower():
+                        print(f"\nYou just picked {i.name[0]}")
+                        my_player.get_item(i)
+                        my_player.current_room.remove_item(i)
+
+            if inp.split(" ")[0] == 'drop':
+                for i in my_player.inventory:
+                    if i.name[0].lower() == inp.split(" ")[1].lower():
+                        print(f"\nYou just picked {i.name[0]}")
+                        my_player.current_room.add_item(i)
+                        my_player.drop_item(i)
+        else:
+            print("Can't understand your direction!")
